@@ -603,18 +603,21 @@ contains
 !$acc loop private(radius,frh,frh_far)
       do i=its,ite
          c1d(i,:)= 0. 
-         entr_rate(i)=1.e-4
+         entr_rate(i)=7.e-5 !- min(20.,float(csum(i))) * 3.e-6
          if(imid.eq.1)entr_rate(i)=3.e-4
+         if(dx(i)<dx_thresh) entr_rate(i)=1.e-4
          radius=.2/entr_rate(i)
          frh=min(1.,3.14*radius*radius/dx(i)/dx(i))
          frh_far = frh/9.
-         if(frh > frh_thresh .and. sub3d == 0)then
+         if(frh > frh_thresh)then
+         if(sub3d == 0)then
             frh=frh_thresh
             radius=sqrt(frh*dx(i)*dx(i)/3.14)
             entr_rate(i)=.2/radius
          else if (sub3d ==1)then
             frh=min(frh_thresh,3.14*radius*radius/dx(i)/dx(i))
             frh_far = frh/9.
+         endif
          endif
          sig(i)=(1.-frh)**2
          frh_out(i) = frh !*sig(i)
@@ -661,9 +664,9 @@ contains
 !
 !--- minimum depth (m), clouds must have
 !
-      depth_min=3000.
+      depth_min=1000.
 !---  for RRFS allow only very deep convection
-      if(imid.eq.1)depth_min=2500.
+      if(imid.eq.1)depth_min=500.
 !
 !--- maximum depth (mb) of capping 
 !--- inversion (larger cap = no convection)
@@ -932,7 +935,7 @@ contains
           zu (i,k)= zuo(i,k)
           tot_clw=tot_clw+qc(i,k)+qi(i,k)
          enddo
-!         if(tot_clw <= 0.)sig(i)=1.
+         if(tot_clw <= 0. and. dx(i)<dx_thresh)sig(i)=1.
          sig_init(i)=sig(i)
 !$acc loop independent
          do k=ktop(i)+1,kte
@@ -1392,10 +1395,10 @@ contains
                ierrc(i)="cloud work function zero"
 #endif
            endif
-           if(aa1(i) <= aa0(i))then
+           if(aa1(i) <= aa0(i) .and. dx(i)<dx_thresh)then
                ierr(i)=18
            endif
-           if(cumulus == 'deep')then
+           if(cumulus == 'deep' .and. dx(i)<dx_thresh)then
               trash=(aa1(i)-aa0(i))/dtime/frh_out(i)
               if(trash.lt. f_thresh(i))ierr(i)=2242
               !if(trash.lt. (frh_out(i)/f_thresh(i)))ierr(i)=2242
@@ -2132,7 +2135,7 @@ contains
 !$acc atomic update
           mconv(i)=mconv(i)+omeg(i,k)*dq/g
         enddo
-        if (mconv(i) < mc_thresh(i)) ierr(i)=2242
+        if (mconv(i) < mc_thresh(i) .and. dx(i)<dx_thresh) ierr(i)=2242
       enddo
 !$acc end kernels
       call cup_forcing_ens_3d(closure_n,xland1,aa0,aa1,xaa0_ens,mbdt,dtime, &
@@ -3594,7 +3597,7 @@ contains
                      endif
              enddo
              if(kk.gt.0)xff_ens3(4)=xomg/float(kk)
-             if(xff_ens3(4) < 0.)ierr(i)=3342
+             !if(xff_ens3(4) < 0.)ierr(i)=3342
              !xff_ens3(4)=0  !! test only
             
 !
@@ -3637,7 +3640,7 @@ contains
 !gtest
              if(ichoice.eq.0)then
                 if(xff0.lt.0.)then
-                     ierr(i)=142
+                    !ierr(i)=142
                      xff_ens3(:)=0.
                      xff_ens3(1)=0.
                      xff_ens3(2)=0.
@@ -3762,11 +3765,6 @@ contains
                  xf_ens(i,13)=0.
                 !forcing(i,8)=0.
               endif
-                 ! following lines for test ONLY!!!
-                 xf_ens(i,4)=max(0.,xf_ens(i,10))
-                 xf_ens(i,5)=max(0.,xf_ens(i,11))
-                 xf_ens(i,6)=max(0.,xf_ens(i,12))
-                 xf_ens(i,14)=max(0.,xf_ens(i,13))
 !srf-begin
 !!              if(xk(1).lt.0.)then
 !!                 xf_dicycle(i)      =  max(0.,-xff_dicycle /xk(1))

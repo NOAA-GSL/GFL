@@ -182,7 +182,6 @@ CONTAINS
      do_smoke_transport = .true.
  endif
 #endif
- ishallow=0
  rain_thresh=0. ! (mm/hr)
  do j = jts, jte
     do i = its, ite
@@ -263,8 +262,6 @@ CONTAINS
     do i = its, itf
        dx_loc(i)   = dxCell
        !if(sub3d == 1 )mc_thresh(i)=3.25/dx_loc(i)
-       mc_thresh(i)=0.0
-       f_thresh(i)=0.9
        !
        ! for cold start, blend this part in...
        !
@@ -376,11 +373,6 @@ CONTAINS
           enddo
        enddo
        do i = its, itf
-          if(mconv(i) .le. mc_thresh(i)) then
-                ierr(i)=42 
-                ierrm(i)=42 
-                mconv(i) = 0.
-          endif
 ! fore regional domain, blend in tendencies in relaxation zone
           if(bilbc(i,j).eq.7)ierr(i)=556
           factor(i)=(6.-float(bilbc(i,j)))/7.+1./7.
