@@ -169,13 +169,12 @@ CONTAINS
  mc_thresh(:)=0.
  f_thresh(:)=0.
  fm_thresh(:)=0.
- if (trim(pbl_scheme)=="bl_mynn") ishallow = 0
+ if (trim(pbl_scheme)=="bl_mynnedmf") ishallow = 0
  if (num_chem .gt. 0) then
      do_smoke_transport = .true.
  else
      do_smoke_transport = .false.
  endif
- ishallow=0
  rain_thresh=0. ! (mm/hr)
  do j = jts, jte
     do i = its, ite
@@ -367,11 +366,6 @@ CONTAINS
           enddo
        enddo
        do i = its, itf
-          if(mconv(i) .le. mc_thresh(i)) then
-                ierr(i)=42 
-                ierrm(i)=42 
-                mconv(i) = 0.
-          endif
           !if(rainncv(i,j)/dt*3600. > rain_thresh .and. sub3d == 1 )then
           !         ierr(i)=44
           !endif
