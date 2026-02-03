@@ -935,7 +935,7 @@ contains
           zu (i,k)= zuo(i,k)
           tot_clw=tot_clw+qc(i,k)+qi(i,k)
          enddo
-         if(tot_clw <= 0. and. dx(i)<dx_thresh)sig(i)=1.
+         if(tot_clw <= 0. .and. dx(i)<dx_thresh)sig(i)=1.
          sig_init(i)=sig(i)
 !$acc loop independent
          do k=ktop(i)+1,kte
