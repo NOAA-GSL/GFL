@@ -234,8 +234,8 @@ contains
 !$acc declare copyin(dx,z1,psur,xland)
      real(kind=kind_phys), dimension (its:ite)                         &
         ,intent (inout   )                ::                           &
-        mconv,ccn
-!$acc declare copy(mconv,ccn)
+        mconv,ccn,edto,edtm
+!$acc declare copy(mconv,ccn,edto,edtm)
      real(kind=kind_phys), dimension (:,:,:)                           &
         ,intent (inout)                   ::                           &
         chem3d
@@ -376,7 +376,7 @@ contains
   ! edt     = epsilon
 
      real(kind=kind_phys),    dimension (its:ite) ::                     &
-       edt,edto,edtm,aa1,aa0,xaa0,hkb,                                   &
+       edt,aa1,aa0,xaa0,hkb,                                             &
        hkbo,xhkb,                                                        &
        xmb,pwavo,ccnloss,                                                &
        pwevo,bu,bud,cap_max,                                             &
@@ -386,7 +386,7 @@ contains
      integer,    dimension (its:ite) ::                                  &
        kzdown,kdet,k22,jmin,kstabi,kstabm,k22x,xland1,                   &
        ktopdby,kbconx,ierr2,ierr3,kbmax
-!$acc declare create(edt,edto,edtm,aa1,aa0,xaa0,hkb,                     &
+!$acc declare create(edt,aa1,aa0,xaa0,hkb,                     &
 !$acc       hkbo,xhkb,                                                   &
 !$acc       xmb,pwavo,ccnloss,                                           &
 !$acc       pwevo,bu,bud,cap_max,                                        &
