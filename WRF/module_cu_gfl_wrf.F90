@@ -170,7 +170,7 @@ CONTAINS
  jpr = jte
  total_time=float(itimestep)*dt
  !print *,'total+_time = ',itimestep,dt,total_time
- imid     = 1
+ imid     = 0
  ishallow = ishallow_g3
  mc_thresh(:)=0.
  f_thresh(:)=0.
