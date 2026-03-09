@@ -169,7 +169,7 @@ CONTAINS
  mc_thresh(:)=0.
  f_thresh(:)=0.
  fm_thresh(:)=0.
- if (trim(pbl_scheme)=="bl_mynnedmf") ishallow = 0
+ if (trim(pbl_scheme)=="bl_mynnedmf" .or. trim(pbl_scheme)=="bl_mynn") ishallow = 0
  if (num_chem .gt. 0) then
      do_smoke_transport = .true.
  else
@@ -256,12 +256,11 @@ CONTAINS
        dx_loc(i)   = dxCell(i,j)
        !if(sub3d == 1 )mc_thresh(i)=3.25/dx_loc(i)
        mc_thresh(i)=0.0
-       f_thresh(i)=0.9
+       f_thresh(i)=0.5
        !
        ! for cold start, blend this part in...
        !
        if(total_time < 5400.)f_thresh(i) = min(1.,(1. - (total_time/5400. -1.)**2))*f_thresh(i)
-       f_thresh(i) = 0.
        area_loc(i) = areaCell(i,j)
        ter11(i)    = max(0.,ht(i,j))
        zo(i,kts)   = ter11(i) + 0.5*dz8w(i,1,j)
